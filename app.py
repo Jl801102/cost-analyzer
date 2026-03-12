@@ -9,15 +9,13 @@ st.set_page_config(page_title="智能物料成本拆解系统", layout="wide")
 st.title("📊 智能物料成本拆解系统")
 st.markdown("上传供应商报价单，AI自动拆解每个物料的成本构成，并生成分析报告。")
 
-# 侧边栏输入API密钥
-with st.sidebar:
-    st.header("🔑 配置")
-    api_key = st.text_input("阿里云百炼 API 密钥", type="password",
-                            help="获取方式：https://bailian.console.aliyun.com/")
-    if not api_key:
-        st.warning("请输入你的阿里云百炼API密钥")
-        st.stop()
-    os.environ["DASHSCOPE_API_KEY"] = api_key  # 设置环境变量供cost_analyzer读取
+# 从环境变量读取API密钥（Streamlit Secrets 中设置）
+api_key = os.getenv("DASHSCOPE_API_KEY")
+if not api_key:
+    st.error("系统错误：未找到API密钥配置，请联系管理员")
+    st.stop()
+# 设置环境变量供cost_analyzer使用（其实cost_analyzer.py中也会读，但再设一次确保）
+os.environ["DASHSCOPE_API_KEY"] = api_key
 
 # 文件上传
 quote_file = st.file_uploader("📄 上传供应商报价单 (Excel格式)", type=['xlsx', 'xls'])
@@ -73,8 +71,8 @@ if quote_file is not None:
                                 file_name=output_file,
                                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                             )
-                        os.unlink(output_file)  # 清理临时Excel文件
+                        os.unlink(output_file)
             except Exception as e:
                 st.error(f"分析出错：{str(e)}")
             finally:
-                os.unlink(tmp_path)  # 清理上传的临时文件
+                os.unlink(tmp_path)
