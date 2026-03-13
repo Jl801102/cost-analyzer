@@ -33,7 +33,7 @@ if quote_file is not None:
                 results = process_quote(tmp_path)
                 st.success(f"✅ 分析完成！共处理 {len(results)} 个物料")
 
-                for res in results:
+for res in results:
     with st.expander(f"📦 {res['物料名称']}  -  报价: {res['报价单价']} {res['报价单位']}"):
         # 新增：显示总成本范围和最佳估算
         st.write(f"**估算总成本范围**: {res['估算总成本范围']} 元")
@@ -83,3 +83,4 @@ if quote_file is not None:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
         os.unlink(output_file)
+
